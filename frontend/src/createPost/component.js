@@ -1,14 +1,15 @@
 import React, {Component} from 'react'
 import serializeForm from 'form-serialize'
 import {connect} from 'react-redux'
-import NumericInput from 'react-numeric-input';
+import {insertPost} from "./actions";
 
 class CreatePost extends Component {
     handleSubmit = (e) => {
         e.preventDefault();
-        const values = serializeForm(e.target, {hash: true});
-        let a = 9;
-
+        let values = serializeForm(e.target, {hash: true});
+        values['timestamp'] = new Date().getTime();
+        values['id'] = new Date().getTime();
+        this.props.insertPost(JSON.stringify(values))
     };
 
     render() {
@@ -40,20 +41,17 @@ class CreatePost extends Component {
                         <div className="form-group">
                             <label className="control-label col-sm-2">Category:</label>
                             <div className="col-sm-10">
-                                <select className="form-control" name="category" value='react'>
+                                <select className="form-control" name="category">
                                     {this.props.categories.map((category) => (
-                                        <option value={category.name}>{category.name}</option>
+                                        <option key={category.name} value={category.name}>{category.name}</option>
                                     ))}
                                 </select>
                             </div>
                         </div>
-
-
                         <button  className='btn btn-default btn-success'>Save</button>
                     </form>
                     <br/>
                     <br/>
-
                 </div>
             </div>
         )
@@ -68,6 +66,14 @@ function mapStateToProps({homePage}) {
     }
 }
 
+
+function mapDispatchToProps(dispatch) {
+    return {
+        insertPost: (data) => dispatch(insertPost(data)),
+    }
+}
+
 export default connect(
     mapStateToProps,
+    mapDispatchToProps
 )(CreatePost)

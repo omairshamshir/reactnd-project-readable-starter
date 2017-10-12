@@ -6,20 +6,12 @@ import {Route} from "react-router-dom";
 
 
 class App extends Component {
-
-
     render() {
         return (
             <div className="App">
-                <Route exact path="/" render={() => (
-                    <HomePage/>
-                )}/>
-                <Route exact path="/create" render={() => (
-                    <CreatePost/>
-                )}/>
-
+                <Route exact path="/" component={HomePage}/>
+                <Route exact path="/create" component={CreatePost}/>
                 <Route exact path="/posts/:post_id" component={PostCommentPage}/>
-
             </div>
         );
     }
