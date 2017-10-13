@@ -1,4 +1,4 @@
-import {ADD_COMMENT, GET_COMMENTS, GET_POST, VOTE_COMMENT, VOTE_POST} from "./constants";
+import {ADD_COMMENT, GET_COMMENTS, GET_POST, VOTE_COMMENT, EDIT_POST, EDIT_COMMENT, DELETE_COMMENT} from "./constants";
 import * as PostAPI from '../utils/PostApi';
 
 export function receiveComments(comments) {
@@ -60,4 +60,46 @@ export const sendComment = (body) => dispatch => (
     PostAPI
         .addComment(body)
         .then(comment => dispatch(addComment(comment)))
+);
+
+
+export function editPost(post) {
+    return {
+        type: EDIT_POST,
+        post
+    }
+}
+
+export const updatePost = (post_id, body) => dispatch => (
+    PostAPI
+        .editPost(post_id, body)
+        .then(post => dispatch(editPost(post)))
+);
+
+
+export function editPostComment(comment) {
+    return {
+        type: EDIT_COMMENT,
+        comment
+    }
+}
+
+export const updateComment = (comment_id, body) => dispatch => (
+    PostAPI
+        .editComment(comment_id, body)
+        .then(comment => dispatch(editPostComment(comment)))
+);
+
+
+export function removeComment(comment) {
+    return {
+        type: DELETE_COMMENT,
+        comment
+    }
+}
+
+export const deleteComment = (comment_id) => dispatch => (
+    PostAPI
+        .deleteComment(comment_id)
+        .then(comment => dispatch(removeComment(comment)))
 );

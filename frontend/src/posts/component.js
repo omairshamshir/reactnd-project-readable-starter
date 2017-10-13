@@ -1,15 +1,24 @@
 import React, {Component} from "react";
 import {connect} from 'react-redux'
 import serializeForm from 'form-serialize'
-import {fetchComments, fetchPost, sendComment, sendCommentVote, sendPostVote} from "./action";
+import {Redirect} from 'react-router';
+import {deleteComment, fetchComments, fetchPost, sendComment, sendCommentVote, sendPostVote} from "./action";
 import {THUMBS_DOWN_URL, THUMBS_UP_URL} from "./constants";
+import EditPost from './editPostComponent'
+import EditComment from './editComment'
+import Modal from 'react-modal'
+import * as PostAPI from '../utils/PostApi';
 
 
 class PostCommentPage extends Component {
 
     state = {
         comment_body: '',
-        comment_author: ''
+        comment_author: '',
+        modal_comment: {},
+        post_modal_open: false,
+        comment_modal_open: false,
+        redirect_to_home: false
     };
 
     handleSubmit = (e) => {
@@ -18,7 +27,7 @@ class PostCommentPage extends Component {
         values['timestamp'] = new Date().getTime();
         values['id'] = (new Date().getTime()).toString();
         values['parentID'] = this.props.post_info.id;
-        this.props.addComment(JSON.stringify(values))
+        this.props.addComment(JSON.stringify(values));
         this.setState({
             comment_body: '',
             comment_author: ''
@@ -28,7 +37,6 @@ class PostCommentPage extends Component {
     componentDidMount() {
         this.props.getComments(this.props.match.params.post_id);
         this.props.getPost(this.props.match.params.post_id);
-
     };
 
     changePostVote = (voteType) => {
@@ -39,16 +47,59 @@ class PostCommentPage extends Component {
         this.props.voteComment(comment_id, JSON.stringify({'option': voteType}))
     };
 
+    removeCommentFromPost = (comment_id) => {
+        this.props.removeComment(comment_id)
+    };
+
     updateComment = (body) => {
-        this.setState({comment_body: body.trim()})
+        this.setState({comment_body: body})
     };
 
     updateAuthor = (author) => {
-        this.setState({comment_author: author.trim()})
+        this.setState({comment_author: author})
+    };
+
+
+    openPostModal = () => {
+        this.setState(() => ({
+            post_modal_open: true,
+
+        }))
+    };
+    closePostModal = () => {
+        this.setState(() => ({
+            post_modal_open: false,
+        }))
+    };
+
+    openCommentModal = (comment) => {
+        this.setState(() => ({
+            comment_modal_open: true,
+            modal_comment: comment
+
+        }))
+    };
+    closeCommentModal = () => {
+        this.setState(() => ({
+            comment_modal_open: false,
+            modal_comment: {}
+        }))
+    };
+
+    deletePost = (post_id) => {
+        PostAPI.deletePost(post_id).then(
+            () => {
+                this.setState(() => ({
+                    'redirect_to_home': true
+                }))
+            }
+        )
     };
 
     render() {
-        console.log(this.props);
+        if (this.state.redirect_to_home) {
+            return (<Redirect to="/"/>);
+        }
         return (
             <div className="container-fluid">
                 <div className="jumbotron">
@@ -71,7 +122,14 @@ class PostCommentPage extends Component {
                     </span>
                     <hr/>
                     <div>
-                        <button className='btn btn-danger'>Delete</button>
+                        <button className='btn btn-danger' onClick={() => {
+                            this.deletePost(this.props.post_info.id)
+                        }}>Delete
+                        </button>
+                        <button className='btn btn-default' onClick={() => {
+                            this.openPostModal()
+                        }}>Edit
+                        </button>
                     </div>
                 </div>
 
@@ -92,6 +150,16 @@ class PostCommentPage extends Component {
                                     this.changeCommentVote(comment.id, 'downVote')
                                 }} src={THUMBS_DOWN_URL} height='30px' width='30px'/>
                             </span>
+                            <hr/>
+                            <button className='btn btn-danger' onClick={() => {
+                                this.removeCommentFromPost(comment.id)
+                            }}>Delete
+                            </button>
+                            <button className='btn btn-primary' onClick={() => {
+                                this.openCommentModal(comment)
+                            }}>Edit
+                            </button>
+
                         </div>
                         <hr/>
                     </div>
@@ -119,6 +187,34 @@ class PostCommentPage extends Component {
                         <button className='btn btn-default btn-success'>Save</button>
                     </div>
                 </form>
+
+                <Modal
+                    className='modal-content'
+                    isOpen={this.state.post_modal_open}
+                    onRequestClose={() => {
+                        this.closePostModal()
+                    }}
+                    contentLabel='Modal'
+                >
+                    {this.state.post_modal_open && <EditPost closeModal={() => {
+                        this.closePostModal()
+                    }}/>}
+                </Modal>
+
+                <Modal
+                    className='modal-content'
+                    isOpen={this.state.comment_modal_open}
+                    onRequestClose={() => {
+                        this.closePostModal()
+                    }}
+                    contentLabel='Modal'
+                >
+                    {this.state.comment_modal_open &&
+                    <EditComment comment={this.state.modal_comment} closeModal={() => {
+                        this.closeCommentModal()
+                    }}/>}
+                </Modal>
+
             </div>
         )
     }
@@ -140,7 +236,8 @@ function mapDispatchToProps(dispatch) {
         getPost: (post_id) => dispatch(fetchPost(post_id)),
         votePost: (post_id, body) => dispatch(sendPostVote(post_id, body)),
         voteComment: (comment_id, body) => dispatch(sendCommentVote(comment_id, body)),
-        addComment: (body) => dispatch(sendComment(body))
+        addComment: (body) => dispatch(sendComment(body)),
+        removeComment: (comment_id) => dispatch(deleteComment(comment_id))
     }
 }
 

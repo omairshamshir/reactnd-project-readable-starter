@@ -29,23 +29,46 @@ export const getComments = (post_id) =>
 
 export const savePost = (body) =>
     fetch(`${api}/posts`,
-        {method: 'POST',
-            headers, body})
+        {
+            method: 'POST',
+            headers, body
+        })
+        .then(res => res.json());
+
+
+export const editPost = (post_id, body) =>
+    fetch(`${api}/posts/${post_id}`,
+        {
+            method: 'PUT',
+            headers,
+            body
+        })
+        .then(res => res.json());
+
+export const editComment = (comment_id, body) =>
+    fetch(`${api}/comments/${comment_id}`,
+        {
+            method: 'PUT',
+            headers,
+            body
+        })
         .then(res => res.json());
 
 
 export const votePost = (post_id, body) =>
     fetch(`${api}/posts/${post_id}`,
-        {method: 'POST',
-         headers,
-         body
+        {
+            method: 'POST',
+            headers,
+            body
         })
         .then(res => res.json());
 
 
 export const voteComment = (comment_id, body) =>
     fetch(`${api}/comments/${comment_id}`,
-        {method: 'POST',
+        {
+            method: 'POST',
             headers,
             body
         })
@@ -54,8 +77,27 @@ export const voteComment = (comment_id, body) =>
 
 export const addComment = (body) =>
     fetch(`${api}/comments`,
-        {method: 'POST',
+        {
+            method: 'POST',
             headers,
             body
+        })
+        .then(res => res.json());
+
+
+export const deletePost = (post_id) =>
+    fetch(`${api}/posts/${post_id}`,
+        {
+            method: 'DELETE',
+            headers,
+        })
+        .then(res => res.json());
+
+
+export const deleteComment = (comment_id) =>
+    fetch(`${api}/comments/${comment_id}`,
+        {
+            method: 'DELETE',
+            headers,
         })
         .then(res => res.json());

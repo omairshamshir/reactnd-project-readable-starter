@@ -166,8 +166,10 @@ app.get('/posts', (req, res) => {
 })
 
 app.post('/posts', bodyParser.json(), (req, res) => {
+    console.log(req)
     posts.add(req.token, req.body)
       .then(
+
           (data) => res.send(data),
           (error) => {
               console.error(error)
@@ -260,6 +262,7 @@ app.get('/comments/:id', (req, res) => {
 })
 
 app.put('/comments/:id', bodyParser.json(), (req, res) => {
+
     comments.edit(req.token, req.params.id, req.body)
       .then(
         (data) => res.send(data),

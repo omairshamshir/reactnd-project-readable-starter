@@ -9,7 +9,8 @@ class CreatePost extends Component {
         let values = serializeForm(e.target, {hash: true});
         values['timestamp'] = new Date().getTime();
         values['id'] = new Date().getTime();
-        this.props.insertPost(JSON.stringify(values))
+        this.props.insertPost(JSON.stringify(values));
+        // this.props.closeModal();
     };
 
     render() {

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PostCommentPage from './posts/component'
 import CreatePost from "./createPost/component";
 import HomePage from "./home/component";
+import CategoryPage from "./home/categoryView";
 import {Route} from "react-router-dom";
 
 
@@ -12,6 +13,7 @@ class App extends Component {
                 <Route exact path="/" component={HomePage}/>
                 <Route exact path="/create" component={CreatePost}/>
                 <Route exact path="/posts/:post_id" component={PostCommentPage}/>
+                <Route exact path="/:category" component={CategoryPage}/>
             </div>
         );
     }

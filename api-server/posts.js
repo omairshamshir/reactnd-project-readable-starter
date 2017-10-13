@@ -76,6 +76,7 @@ function add (token, post) {
       voteScore: 1,
       deleted: false
     }
+    console.log(posts)
 
     res(posts[post.id])
   })
