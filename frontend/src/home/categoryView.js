@@ -7,9 +7,6 @@ class CategoryPage extends Component {
         return (
             <div className="container-fluid">
                 <h3>Posts</h3>
-                <button className='btn btn-success' onClick={() =>{this.openPostModal()}}>Create
-                </button>
-
                 <hr/>
                 <div className='row'>
                     <div className='col-lg-6'>
