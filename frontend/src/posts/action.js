@@ -1,4 +1,7 @@
-import {ADD_COMMENT, GET_COMMENTS, GET_POST, VOTE_COMMENT, EDIT_POST, EDIT_COMMENT, DELETE_COMMENT} from "./constants";
+import {
+    ADD_COMMENT, GET_COMMENTS, GET_POST, VOTE_COMMENT, EDIT_POST, EDIT_COMMENT, DELETE_COMMENT,
+    VOTE_POST
+} from "./constants";
 import * as PostAPI from '../utils/PostApi';
 
 export function receiveComments(comments) {
@@ -22,6 +25,13 @@ export function receivePost(post) {
     }
 }
 
+export function votePost(post) {
+    return {
+        type: VOTE_POST,
+        post
+    }
+}
+
 export const fetchPost = (post_id) => dispatch => (
     PostAPI
         .getPost(post_id)
@@ -32,7 +42,7 @@ export const fetchPost = (post_id) => dispatch => (
 export const sendPostVote = (post_id, body) => dispatch => (
     PostAPI
         .votePost(post_id, body)
-        .then(post => dispatch(receivePost(post)))
+        .then(post => dispatch(votePost(post)))
 );
 
 

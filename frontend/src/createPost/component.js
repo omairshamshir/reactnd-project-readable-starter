@@ -10,7 +10,7 @@ class CreatePost extends Component {
         values['timestamp'] = new Date().getTime();
         values['id'] = new Date().getTime();
         this.props.insertPost(JSON.stringify(values));
-        // this.props.closeModal();
+        this.props.closeModal();
     };
 
     render() {

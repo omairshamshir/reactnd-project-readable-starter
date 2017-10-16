@@ -4,10 +4,10 @@ import serializeForm from 'form-serialize'
 import {Redirect} from 'react-router';
 import {deleteComment, fetchComments, fetchPost, sendComment, sendCommentVote, sendPostVote} from "./action";
 import {THUMBS_DOWN_URL, THUMBS_UP_URL} from "./constants";
+import PostPage from './post';
 import EditPost from './editPostComponent'
 import EditComment from './editComment'
 import Modal from 'react-modal'
-import * as PostAPI from '../utils/PostApi';
 
 
 class PostCommentPage extends Component {
@@ -16,7 +16,6 @@ class PostCommentPage extends Component {
         comment_body: '',
         comment_author: '',
         modal_comment: {},
-        post_modal_open: false,
         comment_modal_open: false,
         redirect_to_home: false
     };
@@ -35,12 +34,8 @@ class PostCommentPage extends Component {
     };
 
     componentDidMount() {
-        this.props.getComments(this.props.match.params.post_id);
         this.props.getPost(this.props.match.params.post_id);
-    };
-
-    changePostVote = (voteType) => {
-        this.props.votePost(this.props.post_info.id, JSON.stringify({'option': voteType}))
+        this.props.getComments(this.props.match.params.post_id);
     };
 
     changeCommentVote = (comment_id, voteType) => {
@@ -60,12 +55,6 @@ class PostCommentPage extends Component {
     };
 
 
-    openPostModal = () => {
-        this.setState(() => ({
-            post_modal_open: true,
-
-        }))
-    };
     closePostModal = () => {
         this.setState(() => ({
             post_modal_open: false,
@@ -86,15 +75,6 @@ class PostCommentPage extends Component {
         }))
     };
 
-    deletePost = (post_id) => {
-        PostAPI.deletePost(post_id).then(
-            () => {
-                this.setState(() => ({
-                    'redirect_to_home': true
-                }))
-            }
-        )
-    };
 
     render() {
         if (this.state.redirect_to_home) {
@@ -102,37 +82,7 @@ class PostCommentPage extends Component {
         }
         return (
             <div className="container-fluid">
-                <div className="jumbotron">
-                    <h3>{this.props.post_info.title}</h3>
-                    <div className='row'>
-                        <span className='col-lg-3'><b>Author:</b> {this.props.post_info.author}</span>
-                        <span className='col-lg-2'>{(new Date(this.props.post_info.timestamp)).toDateString()}</span>
-                    </div>
-                    <hr/>
-                    <p>{this.props.post_info.body}</p>
-                    <span>
-                        <img onClick={() => {
-                            this.changePostVote('upVote')
-                        }} src={THUMBS_UP_URL} height='30px' width='30px'/>
-                        {this.props.post_info.voteScore}
-                        <img onClick={() => {
-                            this.changePostVote('downVote')
-                        }} src={THUMBS_DOWN_URL} height='30px' width='30px'/>
-
-                    </span>
-                    <hr/>
-                    <div>
-                        <button className='btn btn-danger' onClick={() => {
-                            this.deletePost(this.props.post_info.id)
-                        }}>Delete
-                        </button>
-                        <button className='btn btn-default' onClick={() => {
-                            this.openPostModal()
-                        }}>Edit
-                        </button>
-                    </div>
-                </div>
-
+                <PostPage post_info={this.props.post_info}/>
                 <h4>Comments</h4>
                 <br/>
                 {this.props.comments.map((comment) => (
@@ -144,11 +94,11 @@ class PostCommentPage extends Component {
                             <span>
                                 <img onClick={() => {
                                     this.changeCommentVote(comment.id, 'upVote')
-                                }} src={THUMBS_UP_URL} height='30px' width='30px'/>
+                                }} src={THUMBS_UP_URL} height='25px' width='25px'/>
                                 {comment.voteScore}
                                 <img onClick={() => {
                                     this.changeCommentVote(comment.id, 'downVote')
-                                }} src={THUMBS_DOWN_URL} height='30px' width='30px'/>
+                                }} src={THUMBS_DOWN_URL} height='25px' width='25px'/>
                             </span>
                             <hr/>
                             <button className='btn btn-danger' onClick={() => {
@@ -222,7 +172,6 @@ class PostCommentPage extends Component {
 
 function mapStateToProps(state, props) {
     const {post_info, comments} = state.postPage.post_page;
-
     return {
         ...props,
         post_info,
